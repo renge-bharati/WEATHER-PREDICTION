@@ -13,8 +13,8 @@ Features include:
 
 ## 🧠 Model
 - Trained using Scikit-learn
-- Model saved as `weather_model.pkl`
-- Scaler saved as `scaler.pkl`
+- Model saved as `processed_data.pkl`
+- Scaler saved as `processed_data.pkl`
 
 ## 🚀 Deployment Steps
 
