@@ -31,9 +31,6 @@ rainfall = st.sidebar.number_input("Rainfall (mm)", value=0.0)
 # Predict button
 if st.button("Predict Weather"):
     input_data = np.array([[temperature, humidity, pressure, wind_speed, rainfall]])
-   
-    prediction = model.predict(input_scaled)
-
     if prediction[0] == 1:
         st.success("🌧️ Rain Expected Tomorrow")
     else:
