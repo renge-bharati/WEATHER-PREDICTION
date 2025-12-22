@@ -1,23 +1,17 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from keras.models import load_model
-
+from tensorflow.keras.models import load_model
 import pickle
 
 # ---------------- Page Config ----------------
-st.set_page_config(
-    page_title="Weather Prediction App",
-    layout="centered"
-)
+st.set_page_config(page_title="Weather Prediction App", layout="centered")
 
 # ---------------- Load Model & Scaler ----------------
 @st.cache_resource
 def load_artifacts():
-    # Load Keras model (.h5)
     model = load_model("weather_model.h5")
 
-    # Load scaler if used
     try:
         with open("scaler.pkl", "rb") as f:
             scaler = pickle.load(f)
@@ -30,7 +24,7 @@ model, scaler = load_artifacts()
 
 # ---------------- UI ----------------
 st.title("🌦️ Weather Prediction App")
-st.write("Predict whether it will rain tomorrow using Deep Learning")
+st.write("Deep Learning based Weather Prediction")
 
 temperature = st.number_input("Temperature (°C)", 0.0, 50.0, 25.0)
 humidity = st.number_input("Humidity (%)", 0.0, 100.0, 70.0)
@@ -52,19 +46,16 @@ if st.button("Predict Weather"):
         ]
     )
 
-    # Apply scaler if exists
     if scaler is not None:
         input_data = scaler.transform(input_data)
 
-    # Keras prediction
     prediction = model.predict(input_data)
-    prediction_class = (prediction > 0.5).astype(int)
+    prediction = (prediction > 0.5).astype(int)
 
-    if prediction_class[0][0] == 1:
+    if prediction[0][0] == 1:
         st.success("🌧️ Rain Expected Tomorrow")
     else:
         st.success("☀️ No Rain Expected Tomorrow")
 
-# ---------------- Footer ----------------
 st.markdown("---")
-st.caption("Deep Learning Weather Prediction App using Streamlit")
+st.caption("Weather Prediction using Deep Learning & Streamlit")
