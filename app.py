@@ -8,9 +8,9 @@ st.set_page_config(page_title="Weather Prediction App", layout="centered")
 # Load model and scaler
 @st.cache_resource
 def load_model():
-    with open("weather_model.pkl", "rb") as f:
+    with open("processed_data.pkl", "rb") as f:
         model = pickle.load(f)
-    with open("scaler.pkl", "rb") as f:
+    with open("processed_data.pkl", "rb") as f:
         scaler = pickle.load(f)
     return model, scaler
 
