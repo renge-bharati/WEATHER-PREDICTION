@@ -28,10 +28,13 @@ pressure = st.sidebar.number_input("Pressure (hPa)", value=1013.0)
 wind_speed = st.sidebar.number_input("Wind Speed (km/h)", value=10.0)
 rainfall = st.sidebar.number_input("Rainfall (mm)", value=0.0)
 
-# Predict button
-if st.button("Predict Weather"):
-    input_data = np.array([[temperature, humidity, pressure, wind_speed, rainfall]])
-    if prediction[0] == 1:
-        st.success("🌧️ Rain Expected Tomorrow")
-    else:
-        st.success("☀️ No Rain Expected Tomorrow")
+import pandas as pd
+
+input_data = pd.DataFrame(
+    [[temperature, humidity, pressure, wind_speed, rainfall]],
+    columns=["Temperature", "Humidity", "Pressure", "Wind Speed", "Rainfall"]
+)
+
+input_scaled = scaler.transform(input_data)
+prediction = model.predict(input_scaled)
+
