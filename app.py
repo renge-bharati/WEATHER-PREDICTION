@@ -1,61 +1,41 @@
 import streamlit as st
 import numpy as np
-import pandas as pd
-from tensorflow.keras.models import load_model
 import pickle
 
-# ---------------- Page Config ----------------
+# Page config
 st.set_page_config(page_title="Weather Prediction App", layout="centered")
 
-# ---------------- Load Model & Scaler ----------------
+# Load model and scaler
 @st.cache_resource
-def load_artifacts():
-    model = load_model("weather_model.h5")
-
-    try:
-        with open("scaler.pkl", "rb") as f:
-            scaler = pickle.load(f)
-    except:
-        scaler = None
-
+def load_model():
+    with open("weather_model.pkl", "rb") as f:
+        model = pickle.load(f)
+    with open("scaler.pkl", "rb") as f:
+        scaler = pickle.load(f)
     return model, scaler
 
-model, scaler = load_artifacts()
+model, scaler = load_model()
 
-# ---------------- UI ----------------
 st.title("🌦️ Weather Prediction App")
-st.write("Deep Learning based Weather Prediction")
+st.write("Predict tomorrow's weather using machine learning")
 
-temperature = st.number_input("Temperature (°C)", 0.0, 50.0, 25.0)
-humidity = st.number_input("Humidity (%)", 0.0, 100.0, 70.0)
-pressure = st.number_input("Pressure (hPa)", 900.0, 1100.0, 1013.0)
-wind_speed = st.number_input("Wind Speed (km/h)", 0.0, 100.0, 10.0)
-rainfall = st.number_input("Rainfall (mm)", 0.0, 500.0, 0.0)
+st.sidebar.header("Input Weather Parameters")
 
-# ---------------- Prediction ----------------
+# Input fields (adjust names if your dataset columns differ)
+temperature = st.sidebar.number_input("Temperature (°C)", value=25.0)
+humidity = st.sidebar.number_input("Humidity (%)", value=70.0)
+pressure = st.sidebar.number_input("Pressure (hPa)", value=1013.0)
+wind_speed = st.sidebar.number_input("Wind Speed (km/h)", value=10.0)
+rainfall = st.sidebar.number_input("Rainfall (mm)", value=0.0)
+
+# Predict button
 if st.button("Predict Weather"):
+    input_data = np.array([[temperature, humidity, pressure, wind_speed, rainfall]])
+    input_scaled = scaler.transform(input_data)
 
-    input_data = pd.DataFrame(
-        [[temperature, humidity, pressure, wind_speed, rainfall]],
-        columns=[
-            "Temperature",
-            "Humidity",
-            "Pressure",
-            "Wind Speed",
-            "Rainfall"
-        ]
-    )
+    prediction = model.predict(input_scaled)
 
-    if scaler is not None:
-        input_data = scaler.transform(input_data)
-
-    prediction = model.predict(input_data)
-    prediction = (prediction > 0.5).astype(int)
-
-    if prediction[0][0] == 1:
+    if prediction[0] == 1:
         st.success("🌧️ Rain Expected Tomorrow")
     else:
         st.success("☀️ No Rain Expected Tomorrow")
-
-st.markdown("---")
-st.caption("Weather Prediction using Deep Learning & Streamlit")
