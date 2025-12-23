@@ -1,13 +1,22 @@
 import streamlit as st
 import numpy as np
 import pickle
+import os
 
 # Page config
 st.set_page_config(page_title="Weather Prediction App", layout="centered")
 
-# Load model and scaler
+# Load model & scaler
 @st.cache_resource
 def load_artifacts():
+    if not os.path.exists("weather_model.pkl"):
+        st.error("❌ weather_model.pkl not found")
+        st.stop()
+
+    if not os.path.exists("scaler.pkl"):
+        st.error("❌ scaler.pkl not found")
+        st.stop()
+
     with open("weather_model.pkl", "rb") as f:
         model = pickle.load(f)
 
@@ -16,19 +25,20 @@ def load_artifacts():
 
     return model, scaler
 
+
 model, scaler = load_artifacts()
 
-# UI
+# App UI
 st.title("🌦️ Weather Prediction App")
 st.write("Predict tomorrow's weather using Machine Learning")
 
 st.sidebar.header("Input Weather Parameters")
 
-temperature = st.sidebar.number_input("Temperature (°C)", 0.0, 50.0, 25.0)
-humidity = st.sidebar.number_input("Humidity (%)", 0.0, 100.0, 70.0)
-pressure = st.sidebar.number_input("Pressure (hPa)", 900.0, 1100.0, 1013.0)
-wind_speed = st.sidebar.number_input("Wind Speed (km/h)", 0.0, 100.0, 10.0)
-rainfall = st.sidebar.number_input("Rainfall (mm)", 0.0, 500.0, 0.0)
+temperature = st.sidebar.number_input("Temperature (°C)", value=25.0)
+humidity = st.sidebar.number_input("Humidity (%)", value=70.0)
+pressure = st.sidebar.number_input("Pressure (hPa)", value=1013.0)
+wind_speed = st.sidebar.number_input("Wind Speed (km/h)", value=10.0)
+rainfall = st.sidebar.number_input("Rainfall (mm)", value=0.0)
 
 if st.button("Predict Weather"):
     input_data = np.array([[temperature, humidity, pressure, wind_speed, rainfall]])
@@ -40,4 +50,5 @@ if st.button("Predict Weather"):
         st.success("🌧️ Rain Expected Tomorrow")
     else:
         st.success("☀️ No Rain Expected Tomorrow")
+
 
