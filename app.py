@@ -1,29 +1,17 @@
 import streamlit as st
 import numpy as np
 import pickle
-import os
 
-# Page config
 st.set_page_config(page_title="Weather Prediction App", layout="centered")
 
-# Load model & scaler
 @st.cache_resource
 def load_artifacts():
-    file_path = "processed_data.pkl"
-
-    if not os.path.exists(file_path):
-        st.error("❌ processed_data.pkl file not found. Please upload it to GitHub.")
-        st.stop()
-
-    with open(file_path, "rb") as f:
+    with open("processed_data.pkl", "rb") as f:
         model, scaler = pickle.load(f)
-
     return model, scaler
-
 
 model, scaler = load_artifacts()
 
-# App UI
 st.title("🌦️ Weather Prediction App")
 st.write("Predict tomorrow's weather using Machine Learning")
 
@@ -35,7 +23,6 @@ pressure = st.sidebar.number_input("Pressure (hPa)", value=1013.0)
 wind_speed = st.sidebar.number_input("Wind Speed (km/h)", value=10.0)
 rainfall = st.sidebar.number_input("Rainfall (mm)", value=0.0)
 
-# Predict
 if st.button("Predict Weather"):
     input_data = np.array([[temperature, humidity, pressure, wind_speed, rainfall]])
     input_scaled = scaler.transform(input_data)
@@ -46,3 +33,4 @@ if st.button("Predict Weather"):
         st.success("🌧️ Rain Expected Tomorrow")
     else:
         st.success("☀️ No Rain Expected Tomorrow")
+
