@@ -5,29 +5,32 @@ import pickle
 st.set_page_config(page_title="Weather Prediction App", layout="centered")
 
 @st.cache_resource
-def load_model():
+def load_artifacts():
     with open("processed_data.pkl", "rb") as f:
-        model = pickle.load(f)
-    return model
+        data = pickle.load(f)
 
-model = load_model()
+    # Case: model + scaler saved as dictionary
+    if isinstance(data, dict):
+        model = data.get("model")
+        scaler = data.get("scaler")
+    else:
+        # Case: only model saved
+        model = data
+        scaler = None
+
+    return model, scaler
+
+model, scaler = load_artifacts()
 
 st.title("🌦️ Weather Prediction App")
 
-temperature = st.number_input("Temperature (°C)", 25.0)
-humidity = st.number_input("Humidity (%)", 70.0)
-pressure = st.number_input("Pressure (hPa)", 1013.0)
-wind_speed = st.number_input("Wind Speed (km/h)", 10.0)
-rainfall = st.number_input("Rainfall (mm)", 0.0)
+st.sidebar.header("Input Weather Parameters")
+
+temperature = st.sidebar.number_input("Temperature (°C)", 25.0)
+humidity = st.sidebar.number_input("Humidity (%)", 70.0)
+pressure = st.sidebar.number_input("Pressure (hPa)", 1013.0)
+wind_speed = st.sidebar.number_input("Wind Speed (km/h)", 10.0)
+rainfall = st.sidebar.number_input("Rainfall (mm)", 0.0)
 
 if st.button("Predict Weather"):
-    input_data = np.array([[temperature, humidity, pressure, wind_speed, rainfall]])
-    
-    prediction = model.predict(input_data)
-
-    if prediction[0] == 1:
-        st.success("🌧️ Rain Expected Tomorrow")
-    else:
-        st.success("☀️ No Rain Expected Tomorrow")
-
-
+    input_data = np_
