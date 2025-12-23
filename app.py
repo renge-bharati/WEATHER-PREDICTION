@@ -32,3 +32,4 @@ if st.button("Predict Weather"):
     else:
         st.success("☀️ No Rain Expected Tomorrow")
 
+
